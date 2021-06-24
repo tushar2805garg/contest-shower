@@ -169,7 +169,7 @@ class App extends React.Component {
             <h2> You are {this.state.rank} </h2>
             <Bar
               data={this.state.statee}
-              height={50}
+              height={85}
               options={{
                 title: {
                   display: true,
@@ -184,7 +184,7 @@ class App extends React.Component {
             />
             <Bar
               data={this.state.Rating}
-              height={50}
+              height={85}
               options={{
                 title: {
                   display: true,

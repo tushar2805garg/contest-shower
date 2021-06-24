@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+
+@media only screen and (max-width: 1200px){
+  /*Tablets [601px -> 1200px]*/
+  .height{
+    height: 50
+  }
+}
+@media only screen and (max-width: 600px){
+/*Big smartphones [426px -> 600px]*/
+.height{
+  height: 50
+}
+}
+@media only screen and (max-width: 425px){
+/*Small smartphones [325px -> 425px]*/
+.height{
+  height: 50
+}
+}
