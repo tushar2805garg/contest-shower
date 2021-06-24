@@ -1,6 +1,7 @@
 import React from "react";
-import { Bar } from "react-chartjs-2";
+import { Bar,defaults } from "react-chartjs-2";
 import "./App.css";
+// defaults.global.maintainAspectRatio = false
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -167,10 +168,13 @@ class App extends React.Component {
             <h2> Your current rating is {this.state.currRating} </h2>
             <h2> You belongs to {this.state.Organization} </h2>
             <h2> You are {this.state.rank} </h2>
+            <div  className="chart-container">
             <Bar
               data={this.state.statee}
-              height={85}
+              // height={85}
               options={{
+                // responsive:true,
+                maintainAspectRatio: false,
                 title: {
                   display: true,
                   text: "Levels Of Problems Solved",
@@ -179,13 +183,18 @@ class App extends React.Component {
                 legend: {
                   display: true,
                   position: "right"
-                }
+                }, 
+                // width:"400",
+                // height:"400",
               }}
             />
             <Bar
               data={this.state.Rating}
-              height={85}
+              // height={85}
+              // className="chart-container"
               options={{
+                // responsive:true,
+                maintainAspectRatio: false,
                 title: {
                   display: true,
                   text: "Levels Of Problems Solved",
@@ -194,9 +203,12 @@ class App extends React.Component {
                 legend: {
                   display: true,
                   position: "right"
-                }
+                },  
+                // width:"400",
+                // height:"400",
               }}
             />
+            </div>
           </div>
         ) : null}
       </div>
