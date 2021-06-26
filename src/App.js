@@ -1,7 +1,9 @@
 import React from "react";
-import { Bar,defaults } from "react-chartjs-2";
+import {Bar,Pie} from "react-chartjs-2";
 import "./App.css";
-// defaults.global.maintainAspectRatio = false
+import Tag from "./Tags";
+import Button from '@material-ui/core/Button'
+import Input from '@material-ui/core/Input'
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -39,8 +41,36 @@ class App extends React.Component {
             data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ]
+      },
+      Tags:{
+        labels:[],
+        datasets:[
+          { 
+            label: "Tags Of problem Solved",
+            backgroundColor: "rgba(75,192,192,1)",
+            borderColor: "rgba(0,0,0,1)",
+            borderWidth: 2,
+            data: []
+          }
+        ]
       }
     };
+  }
+  CreateTag(){
+    const arr=[];
+    console.log(Tag);
+    for(const tag in Tag){
+      arr.push(tag);
+    }
+    console.log(arr);
+    return arr;
+  }
+  CreateArray(size) {
+    const array = [];
+    for (var i = 0; i < size; i++) {
+      array.push(0);
+    }
+    return array;
   }
   componentDidMount() {
     this.setState({
@@ -51,15 +81,31 @@ class App extends React.Component {
       rank: "",
       maxrating: "",
       isloggedin: false,
-      arr: this.CreateArray
+      arr: this.CreateArray(),
+      Tags:{
+         labels:this.CreateTag(),
+         datasets:[
+          {
+            label: "Tags Of problem Solved",
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              "#FF1493", "	#FF69B4","#800080","	#4169E1","#0000CD","	#AFEEEE","	#40E0D0"
+              ,"#00FFFF","#00FF7F","#32CD32","	#FFFF00","	#DAA520","	#CD5C5C","#A52A2A	",
+              "#D2691E","	#FF00FF","#D8BFD8","	#9932CC","#8B008B","#C71585","#1E90FF",
+              "	#5F9EA0","	#AFEEEE","#5F9EA0"
+          ],
+            borderColor: "rgba(0,0,0,1)",
+            borderWidth: 2,
+            data: []
+          }
+         ]
+      }
     });
-  }
-  CreateArray() {
-    const array = [];
-    for (var i = 0; i < 7; i++) {
-      array.push(0);
-    }
-    return array;
   }
   CodeforcesId = (event) => {
     let value = event.target.value;
@@ -68,7 +114,6 @@ class App extends React.Component {
     });
   };
   Clicked() {
-    console.log(this.state.isloggedin);
     var new_to_set = this.state.isloggedin === false ? true : false;
     this.setState({ isloggedin: new_to_set }, function () {
       if (this.state.isloggedin === false) {
@@ -78,7 +123,6 @@ class App extends React.Component {
       const url =
         "https://codeforces.com/api/user.info?handles=" +
         this.state.codeforcesid;
-      console.log(url);
       fetch(url)
         .then((res) => res.json())
         .then((res) => {
@@ -98,9 +142,9 @@ class App extends React.Component {
         "https://codeforces.com/api/user.status?handle=" +
         this.state.codeforcesid +
         "&from=1&count=1000000";
-      console.log(Qsolved);
-      var count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      var rating = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+      var count = this.CreateArray(26);
+      var rating = this.CreateArray(24);
+      var countoftags= this.CreateArray(37);
       fetch(Qsolved)
         .then((res) => res.json())
         .then((res) => {
@@ -115,8 +159,20 @@ class App extends React.Component {
               var rt = z[i].problem.rating - 800;
               rt = rt / 100;
               rating[rt]++;
+              for(var j=0;j<z[i].problem.tags.length;j++){
+                var str=z[i].problem.tags[j];
+                // str=str.replace(/\s/g, "");
+                str=str.replace(/[-\s]/g,"")
+                countoftags[Tag[str]]++;
+              }
             }
           }
+          var c=0;
+          console.log(count);
+          for(var i=0;i<count.length;i++){
+            c=c+count[i];
+          }
+          console.log(c);
           this.setState({
             statee: {
               labels: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N"
@@ -143,6 +199,29 @@ class App extends React.Component {
                   data: rating
                 }
               ]
+            },
+            Tags:{
+               labels:this.CreateTag(),
+               datasets:[
+                {
+                  label: "Tags Of problem Solved",
+                  backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    "#FF1493", "	#FF69B4","#800080","	#4169E1","#0000CD","	#AFEEEE","	#40E0D0"
+                    ,"#00FFFF","#00FF7F","#32CD32","	#FFFF00","	#DAA520","	#CD5C5C","#A52A2A	",
+                    "#D2691E","	#FF00FF","#D8BFD8","	#9932CC","#8B008B","#C71585","#1E90FF",
+                    "	#5F9EA0","	#AFEEEE","#5F9EA0"
+                ],
+                  borderColor: "rgba(0,0,0,1)",
+                  borderWidth: 2,
+                  data: countoftags
+                }
+               ]
             }
           });
         });
@@ -151,16 +230,21 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <button onClick={() => this.Clicked()}>
+         <img src="contestshower.jpg" className="image"/>
+         <div className="input">
+        <Button variant="contained" color="primary" onClick={() => this.Clicked()}
+        style={{padding:"10px",margin:"10px"}}
+        >
           {this.state.isloggedin === true ? "Logout" : "Login"}
-        </button>
-        <input
+        </Button>
+        <Input autoComplete="off"
           disabled={this.state.isloggedin}
           onChange={this.CodeforcesId}
           type="text"
           placeholder="Enter your Codeforces id"
           value={this.state.codeforcesid}
         />
+        </div>
         {this.state.name !== "" ? (
           <div>
             <h1> Hello {this.state.name} </h1>
@@ -169,6 +253,23 @@ class App extends React.Component {
             <h2> You belongs to {this.state.Organization} </h2>
             <h2> You are {this.state.rank} </h2>
             <div  className="chart-container">
+            <Pie
+           data={this.state.Tags}
+             options={{
+              maintainAspectRatio: false,
+            title:{
+              display:true,
+              text:'Average Rainfall per month',
+              fontSize:20
+            },
+            plugins:{
+            legend:{
+              display:true,
+              position:'right'
+            }
+          },
+          }}
+        />
             <Bar
               data={this.state.statee}
               // height={85}

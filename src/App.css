@@ -41,3 +41,11 @@
   height: 50vh;
   width: 100vw;
 }
+.image{
+  display: block;
+  margin:auto;
+  border-radius: 50%;
+}
+.input{
+   text-align: center;
+}
