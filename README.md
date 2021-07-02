@@ -1,7 +1,10 @@
 # Project is Live at:
 https://contest-shower.herokuapp.com/
 
-
+# Description of Project:
+You can enter your codeforces handle name and it fetches data for which I have used Codeforces Api
+and it displays how many problems you have solved and ratings of various problems solved so that
+you can improve the part where you are lagging.
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
