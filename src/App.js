@@ -1,5 +1,5 @@
 import React from "react";
-import {Bar,Pie} from "react-chartjs-2";
+import {Bar,Pie,Line} from "react-chartjs-2";
 import "./App.css";
 import Tag from "./Tags";
 import Button from '@material-ui/core/Button'
@@ -17,8 +17,7 @@ class App extends React.Component {
       arr: [],
       isloggedin: false,
       statee: {
-        labels: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N"
-        ],
+        labels: [],
         datasets: [
           {
             label: "Problems Solved",
@@ -30,8 +29,7 @@ class App extends React.Component {
         ]
       },
       Rating: {
-        labels: ["800","900","1000","1100","1200","1300","1400","1500","1600","1700", "1800","1900","2000","2100","2200","2300","2400","2500","2600","2700"
-        ],
+        labels: [],
         datasets: [
             {
             label: "Levels Of problem Solved",
@@ -53,6 +51,20 @@ class App extends React.Component {
             data: []
           }
         ]
+      },
+      Graph:{
+labels: [],
+datasets: [
+ {
+   label: 'Rating',
+   fill: false,
+   lineTension: 0.5,
+   backgroundColor: 'rgba(75,192,192,1)',
+   borderColor: 'rgba(0,0,0,1)',
+   borderWidth: 2,
+   data: [65, 59, 80, 81, 56,12,31,23,45]
+ }
+]
       }
     };
   }
@@ -74,12 +86,12 @@ class App extends React.Component {
   }
   componentDidMount() {
     this.setState({
-      codeforcesid: "",
-      name: "",
-      Organization: "",
-      currRating: "",
-      rank: "",
-      maxrating: "",
+      codeforcesid: null,
+      name: null,
+      Organization: null,
+      currRating: null,
+      rank: null,
+      maxrating: null,
       isloggedin: false,
       arr: this.CreateArray(),
       Tags:{
@@ -117,7 +129,7 @@ class App extends React.Component {
     var new_to_set = this.state.isloggedin === false ? true : false;
     this.setState({ isloggedin: new_to_set }, function () {
       if (this.state.isloggedin === false) {
-        this.setState({ codeforcesid: "", name: "" });
+        this.setState({ codeforcesid: "", name: null });
         return;
       }
       const url =
@@ -131,20 +143,22 @@ class App extends React.Component {
             return;
           }
           this.setState({
-            name: res.result[0].hasOwnProperty('firstName') === true ?  res.result[0].firstName : "Bro",
-            rank: res.result[0].rank, // in string
-            maxrating: res.result[0].maxRating, // in numbers
-            Organization: res.result[0].organization,
-            currRating: res.result[0].rating
+            name: res.result[0].hasOwnProperty('firstName') === true ?  res.result[0].firstName : "No-name",
+            rank: res.result[0].hasOwnProperty("rank") ?  res.result[0].rank : null, // in string
+            maxrating: res.result[0].hasOwnProperty("maxRating") ? res.result[0].maxRating : null, // in numbers
+            Organization: res.result[0].hasOwnProperty("organization") === true ? res.result[0].organization : null,
+            currRating: res.result[0].hasOwnProperty("rating") ? res.result[0].rating : null
           });
         });
       const Qsolved =
         "https://codeforces.com/api/user.status?handle=" +
         this.state.codeforcesid +
         "&from=1&count=1000000";
-      var count = this.CreateArray(26);
-      var rating = this.CreateArray(24);
+      var count = this.CreateArray(40);
+      var rating = this.CreateArray(40);
       var countoftags= this.CreateArray(37);
+      var maxi=0;
+      var max_problem_number=0;
       fetch(Qsolved)
         .then((res) => res.json())
         .then((res) => {
@@ -154,11 +168,17 @@ class App extends React.Component {
           var z = res.result;
           for (var i = 0; i < z.length; i++) {
             var idx = z[i].problem.index.charCodeAt(0) - 65;
+            if(idx>max_problem_number){
+              max_problem_number=idx;
+            }
             if (z[i].verdict === "OK") {
               count[idx]++;
               var rt = z[i].problem.rating - 800;
               rt = rt / 100;
               rating[rt]++;
+              if(rt>maxi){
+                maxi=rt;
+              }
               for(var j=0;j<z[i].problem.tags.length;j++){
                 var str=z[i].problem.tags[j];
                 // str=str.replace(/\s/g, "");
@@ -166,6 +186,18 @@ class App extends React.Component {
                 countoftags[Tag[str]]++;
               }
             }
+          }
+          var numbers=[];
+          var problem_number=[];
+          for(var i=0;i<=maxi;i++){
+               var z=800+(i)*100;
+               console.log(z);
+               z=z.toString();
+               numbers.push(z);
+          }
+          for(var i=0;i<=max_problem_number;i++){
+            var chr = String.fromCharCode(65 + i);
+            problem_number.push(chr);
           }
           var c=0;
           console.log(count);
@@ -175,8 +207,7 @@ class App extends React.Component {
           console.log(c);
           this.setState({
             statee: {
-              labels: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N"
-              ],
+              labels:problem_number,
               datasets: [
                 {
                   label: "Problems Solved",
@@ -188,8 +219,7 @@ class App extends React.Component {
               ]
             },
             Rating: {
-             labels:["800","900","1000","1100","1200","1300","1400","1500","1600","1700","1800","1900","2000","2100","2200","2300","2400","2500","2600","2700"
-            ],
+             labels:numbers,
               datasets: [
                 {
                   label: "Levels Of problem Solved",
@@ -225,6 +255,34 @@ class App extends React.Component {
             }
           });
         });
+        const Graph= "https://codeforces.com/api/user.rating?handle="+this.state.codeforcesid;
+        const arr=[];
+        const contests=[];
+        fetch(Graph)
+        .then(res =>res.json())
+        .then(res=>{
+             var z=res.result;
+             for(var i=0;i<z.length;i++){
+                 arr.push(z[i].newRating);
+                 contests.push(i+1);
+             }
+             this.setState({
+               Graph:{
+                 labels:contests,
+                 datasets: [
+                  {
+                    label: 'Rating',
+                    fill: false,
+                    lineTension: 0.5,
+                    backgroundColor: 'rgba(75,192,192,1)',
+                    borderColor: 'rgba(0,0,0,1)',
+                    borderWidth: 2,
+                    data: arr
+                  }
+                 ]
+               }
+             })
+        })
     });
   }
   render() {
@@ -245,13 +303,13 @@ class App extends React.Component {
           value={this.state.codeforcesid}
         />
         </div>
-        {this.state.name !== "" ? (
+        {this.state.name !== null ? (
           <div>
-            <h1> Hello {this.state.name} </h1>
-            <h2> Your maximum rating is {this.state.maxrating} </h2>
-            <h2> Your current rating is {this.state.currRating} </h2>
-            <h2> You belongs to {this.state.Organization} </h2>
-            <h2> You are {this.state.rank} </h2>
+          <h1> Hello {this.state.name} </h1>
+          {this.state.maxrating !== null ? <h2> Your maximum rating is {this.state.maxrating} </h2> : null}
+          {this.state.currRating !== null ? <h2> Your current rating is {this.state.currRating} </h2> :null}
+          {this.state.Organization !== null ? <h2> You belongs to {this.state.Organization} </h2> : null}
+          {this.state.rank !==null ? <h2> You are {this.state.rank} </h2> : null}
             <div  className="chart-container">
             <Pie
            data={this.state.Tags}
@@ -259,7 +317,7 @@ class App extends React.Component {
               maintainAspectRatio: false,
             title:{
               display:true,
-              text:'Average Rainfall per month',
+              text:'Tags of Problems Solved',
               fontSize:20
             },
             plugins:{
@@ -309,6 +367,21 @@ class App extends React.Component {
                 // height:"400",
               }}
             />
+          <Line
+          data={this.state.Graph}
+          options={{
+            maintainAspectRatio:false,
+            title:{
+              display:true,
+              text:'User Rating Graph',
+              fontSize:20
+            },
+            legend:{
+              display:true,
+              position:'right'
+            }
+          }}
+        />
             </div>
           </div>
         ) : null}
